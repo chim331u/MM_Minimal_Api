@@ -40,7 +40,7 @@ public class ApplicationContext(DbContextOptions<ApplicationContext> options) : 
     public DbSet<Supplier> suppliers { get; set; }
     public DbSet<Bill> bills{ get; set; }
     public DbSet<ReadInBill> readInBill { get; set; }
-
+    public  DbSet<TokenInfo> TokenInfo { get; set; }
         
     /// <summary>
     /// Configures the model and relationships for the database context.

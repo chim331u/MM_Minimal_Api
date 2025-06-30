@@ -46,6 +46,9 @@ namespace MoneyManagement.Extensions
             builder.Services.AddScoped<IIdentityAccessService, IdentityAccessService>();
             builder.Services.AddScoped<IStatisticService, StatisticService>();
             builder.Services.AddScoped<IBillService, BillService>();
+            builder.Services.AddScoped<IIdentityService, IdentityService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IHashicorpVaultService, HashiCorpVaultService>();
 
             // Adding validators from the current assembly
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
@@ -91,7 +94,7 @@ namespace MoneyManagement.Extensions
                         };
                     }
                 );
-
+            builder.Services.AddAuthorization();
 
             // Register exception handler
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

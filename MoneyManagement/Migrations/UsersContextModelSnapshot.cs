@@ -15,70 +15,55 @@ namespace MoneyManagement.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.26");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("UserName")
+                    b.Property<string>("NormalizedName")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
+                    b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
+                        .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -126,6 +111,21 @@ namespace MoneyManagement.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
@@ -145,7 +145,255 @@ namespace MoneyManagement.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.AccountMasterData", b =>
+            modelBuilder.Entity("MoneyManagement.Models.AncillaryData.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CountryCodeALF3")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CountryCodeNum3")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AD_Country", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.AncillaryData.Currency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CurrencyCodeALF3")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CurrencyCodeNum3")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AD_Currency", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.AncillaryData.CurrencyConversionRate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CurrencyCodeALF3")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("RateValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("ReferringDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UniqueKey")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AD_CurrencyConversionRate", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.AncillaryData.ReadInBill", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("BillProperty")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("KeyWord")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PropertyDataType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RegexString")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("SupplierId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("ReadInBill", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.AncillaryData.ServiceUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Surname")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AD_ServiceUser", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.AncillaryData.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Contract")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UnitMeasure")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.Balance.Balance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("BalanceValue")
+                        .HasColumnType("REAL");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateBalance")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastUpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("MM_Balance", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.BankAccount.AccountMasterData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -196,41 +444,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("MM_AccountMasterData", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.Balance", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("BalanceValue")
-                        .HasColumnType("REAL");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateBalance")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.ToTable("MM_Balance", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.BankMasterData", b =>
+            modelBuilder.Entity("MoneyManagement.Models.BankAccount.BankMasterData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -284,7 +498,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("MM_BankMasterData", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.Bill", b =>
+            modelBuilder.Entity("MoneyManagement.Models.Bill.Bill", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -333,7 +547,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("Bills", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.CardMasterData", b =>
+            modelBuilder.Entity("MoneyManagement.Models.CardMasterData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -389,114 +603,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("MM_CardMasterData", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("CountryCodeALF3")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CountryCodeNum3")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AD_Country", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.Currency", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CurrencyCodeALF3")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CurrencyCodeNum3")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AD_Currency", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.CurrencyConversionRate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CurrencyCodeALF3")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("RateValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ReferringDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UniqueKey")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AD_CurrencyConversionRate", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.HouseThings", b =>
+            modelBuilder.Entity("MoneyManagement.Models.HouseThings.HouseThings", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -545,7 +652,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("HouseThings", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.HouseThingsRooms", b =>
+            modelBuilder.Entity("MoneyManagement.Models.HouseThings.HouseThingsRooms", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -580,7 +687,99 @@ namespace MoneyManagement.Migrations
                     b.ToTable("HouseThingsRoom", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ISA_Accounts", b =>
+            modelBuilder.Entity("MoneyManagement.Models.Identity.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.Identity.TokenInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ExpiredAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TokenInfo");
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.IdentityAccess.ISA_Accounts", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -626,7 +825,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("ISA_Accounts", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ISA_PasswordsOld", b =>
+            modelBuilder.Entity("MoneyManagement.Models.IdentityAccess.ISA_PasswordsOld", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -657,47 +856,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("ISA_PasswordsOld", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ReadInBill", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("BillProperty")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("KeyWord")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PropertyDataType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RegexString")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("SupplierId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SupplierId");
-
-                    b.ToTable("ReadInBill", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.Salary", b =>
+            modelBuilder.Entity("MoneyManagement.Models.Salary.Salary", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -751,93 +910,7 @@ namespace MoneyManagement.Migrations
                     b.ToTable("SL_Salary", (string)null);
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ServiceConfigs", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ServiceConfigs", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.ServiceUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Surname")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AD_ServiceUser", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.Supplier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Contract")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UnitMeasure")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Suppliers", (string)null);
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.Transaction", b =>
+            modelBuilder.Entity("MoneyManagement.Models.Transactions.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -883,9 +956,37 @@ namespace MoneyManagement.Migrations
                     b.ToTable("TX_Transaction", (string)null);
                 });
 
+            modelBuilder.Entity("MoneyManagement.Models.Utility.ServiceConfigs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceConfigs", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MoneyManagement.Models.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -894,7 +995,22 @@ namespace MoneyManagement.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MoneyManagement.Models.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MoneyManagement.Models.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -903,20 +1019,38 @@ namespace MoneyManagement.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("MoneyManagement.Models.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.AccountMasterData", b =>
+            modelBuilder.Entity("MoneyManagement.Models.AncillaryData.ReadInBill", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.BankMasterData", "BankMasterData")
+                    b.HasOne("MoneyManagement.Models.AncillaryData.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId");
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.Balance.Balance", b =>
+                {
+                    b.HasOne("MoneyManagement.Models.BankAccount.AccountMasterData", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId");
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("MoneyManagement.Models.BankAccount.AccountMasterData", b =>
+                {
+                    b.HasOne("MoneyManagement.Models.BankAccount.BankMasterData", "BankMasterData")
                         .WithMany()
                         .HasForeignKey("BankMasterDataId");
 
-                    b.HasOne("MM_RESTAPI.Data.Currency", "Currency")
+                    b.HasOne("MoneyManagement.Models.AncillaryData.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId");
 
@@ -925,36 +1059,27 @@ namespace MoneyManagement.Migrations
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.Balance", b =>
+            modelBuilder.Entity("MoneyManagement.Models.BankAccount.BankMasterData", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.AccountMasterData", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId");
-
-                    b.Navigation("Account");
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.BankMasterData", b =>
-                {
-                    b.HasOne("MM_RESTAPI.Data.Country", "Country")
+                    b.HasOne("MoneyManagement.Models.AncillaryData.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId");
 
                     b.Navigation("Country");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.Bill", b =>
+            modelBuilder.Entity("MoneyManagement.Models.Bill.Bill", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.Supplier", "Supplier")
+                    b.HasOne("MoneyManagement.Models.AncillaryData.Supplier", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierId");
 
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.CardMasterData", b =>
+            modelBuilder.Entity("MoneyManagement.Models.CardMasterData", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.AccountMasterData", "AccountMasterData")
+                    b.HasOne("MoneyManagement.Models.BankAccount.AccountMasterData", "AccountMasterData")
                         .WithMany()
                         .HasForeignKey("AccountMasterDataId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -963,9 +1088,9 @@ namespace MoneyManagement.Migrations
                     b.Navigation("AccountMasterData");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.HouseThings", b =>
+            modelBuilder.Entity("MoneyManagement.Models.HouseThings.HouseThings", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.HouseThingsRooms", "Room")
+                    b.HasOne("MoneyManagement.Models.HouseThings.HouseThingsRooms", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -974,40 +1099,31 @@ namespace MoneyManagement.Migrations
                     b.Navigation("Room");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ISA_Accounts", b =>
+            modelBuilder.Entity("MoneyManagement.Models.IdentityAccess.ISA_Accounts", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.ServiceUser", "ISA_User")
+                    b.HasOne("MoneyManagement.Models.AncillaryData.ServiceUser", "ISA_User")
                         .WithMany()
                         .HasForeignKey("ISA_UserId");
 
                     b.Navigation("ISA_User");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ISA_PasswordsOld", b =>
+            modelBuilder.Entity("MoneyManagement.Models.IdentityAccess.ISA_PasswordsOld", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.ISA_Accounts", "ISA_Account")
+                    b.HasOne("MoneyManagement.Models.IdentityAccess.ISA_Accounts", "ISA_Account")
                         .WithMany("ISA_PasswordsOld")
                         .HasForeignKey("ISA_AccountId");
 
                     b.Navigation("ISA_Account");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ReadInBill", b =>
+            modelBuilder.Entity("MoneyManagement.Models.Salary.Salary", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId");
-
-                    b.Navigation("Supplier");
-                });
-
-            modelBuilder.Entity("MM_RESTAPI.Data.Salary", b =>
-                {
-                    b.HasOne("MM_RESTAPI.Data.Currency", "Currency")
+                    b.HasOne("MoneyManagement.Models.AncillaryData.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId");
 
-                    b.HasOne("MM_RESTAPI.Data.ServiceUser", "User")
+                    b.HasOne("MoneyManagement.Models.AncillaryData.ServiceUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
@@ -1016,9 +1132,9 @@ namespace MoneyManagement.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.Transaction", b =>
+            modelBuilder.Entity("MoneyManagement.Models.Transactions.Transaction", b =>
                 {
-                    b.HasOne("MM_RESTAPI.Data.AccountMasterData", "Account")
+                    b.HasOne("MoneyManagement.Models.BankAccount.AccountMasterData", "Account")
                         .WithMany()
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1027,7 +1143,7 @@ namespace MoneyManagement.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("MM_RESTAPI.Data.ISA_Accounts", b =>
+            modelBuilder.Entity("MoneyManagement.Models.IdentityAccess.ISA_Accounts", b =>
                 {
                     b.Navigation("ISA_PasswordsOld");
                 });

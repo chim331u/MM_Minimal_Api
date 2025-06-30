@@ -30,6 +30,16 @@ public static class CountryEndpoint
             return result != null ? Results.Ok(result) : Results.NotFound();
         });
         
+        app.MapPut("/UpdateCountry", async (Country item, IAncillaryService service) =>
+        {
+            if (item == null)
+            {
+                return Results.BadRequest("Country is null");
+            }
+            var result = await service.UpdateCountry(item);
+            return result != null ? Results.Ok(result) : Results.NotFound();
+        });
+        
         return app;
     }
     

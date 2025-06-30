@@ -61,11 +61,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication(); //it is new line
-//app.UseAuthorization();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 
 app.MapGroup("/api/v1/")
-    .WithTags(" Country endpoints")
+    .WithTags(" Access endpoints")
+    .MapAccessEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Country endpoints").RequireAuthorization()
     .MapCountryEndPoint();
 
 app.Run();

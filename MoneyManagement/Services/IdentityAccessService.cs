@@ -21,6 +21,11 @@ namespace MoneyManagement.Services
             _logger = logger;
         }
 
+        protected IdentityAccessService()
+        {
+            throw new NotImplementedException();
+        }
+
         #region Identity Accounts
         public async Task<ICollection<ISA_Accounts>> GetActiveIdentityAccountList()
         {
