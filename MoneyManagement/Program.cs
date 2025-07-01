@@ -69,7 +69,13 @@ app.MapGroup("/api/v1/")
     .MapAccessEndPoint();
 
 app.MapGroup("/api/v1/")
-    .WithTags(" Country endpoints").RequireAuthorization()
+    .WithTags(" Country endpoints")
+    //.RequireAuthorization()
     .MapCountryEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Currency endpoints")
+    //.RequireAuthorization()
+    .MapCurrencyEndPoint();
 
 app.Run();

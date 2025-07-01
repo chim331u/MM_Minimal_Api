@@ -20,13 +20,12 @@ namespace MoneyManagement.Services
         {
             try
             {
-                var result = await _context.Balance.Include(c=>c.Account).Include(c=>c.Account.Currency).Where(x => x.IsActive).OrderByDescending(x => x.DateBalance).ToListAsync();
+                var result = await _context.Balance.Include(c => c.Account).Include(c => c.Account.Currency)
+                    .Where(x => x.IsActive).OrderByDescending(x => x.DateBalance).ToListAsync();
 
                 ICollection<Balance> balanceList = new List<Balance>();
 
-                
                 return result;
-
             }
             catch (Exception ex)
             {
@@ -39,10 +38,10 @@ namespace MoneyManagement.Services
         {
             try
             {
-                var result = await _context.Balance.Include(c => c.Account).Include(c => c.Account.Currency).Where(x=>x.Id == balanceId).FirstOrDefaultAsync();
+                var result = await _context.Balance.Include(c => c.Account).Include(c => c.Account.Currency)
+                    .Where(x => x.Id == balanceId).FirstOrDefaultAsync();
 
                 return result;
-
             }
             catch (Exception ex)
             {
@@ -53,12 +52,24 @@ namespace MoneyManagement.Services
 
         public async Task<Balance> UpdateBalance(Balance item)
         {
-            
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
+                var existingBalance = await _context.Balance.Include(c => c.Account).Include(c => c.Account.Currency)
+                    .Where(x => x.Id == item.Id).FirstOrDefaultAsync();
 
-                var result = _context.Balance.Update(item);
+                if (existingBalance == null)
+                {
+                    _logger.LogError("Balance not found for update.");
+                    return null;
+                }
+
+                existingBalance.DateBalance = item.DateBalance;
+                existingBalance.BalanceValue = item.BalanceValue;
+                existingBalance.IsActive = item.IsActive;
+                existingBalance.Note = item.Note;
+                existingBalance.LastUpdatedDate = item.LastUpdatedDate;
+
+                _context.Balance.Update(existingBalance);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -67,44 +78,21 @@ namespace MoneyManagement.Services
             {
                 _logger.LogError(ex.Message);
                 return null;
-
             }
-
         }
 
         public async Task<Balance> AddBalance(Balance item)
         {
-            var account = await _context.AccountMasterData.Include(x=>x.Currency).Where(x=>x.Id==item.Account.Id).FirstOrDefaultAsync();
-            
+            var account = await _context.AccountMasterData.Include(x => x.Currency).Where(x => x.Id == item.Account.Id)
+                .FirstOrDefaultAsync();
+
             try
             {
                 item.CreatedDate = DateTime.Now;
                 item.IsActive = true;
-                item.Account= account;
-                item.LastUpdatedDate= DateTime.Now;
-                var result = await _context.Balance.AddAsync(item);
-                await _context.SaveChangesAsync();
-
-                return item; 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return null;
-
-            }
-
-        }
-
-        public async Task<Balance> DeleteBalance(Balance item)
-        {
-           
-            try
-            {
+                item.Account = account;
                 item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
-
-                var result = _context.Balance.Update(item);
+                var result = await _context.Balance.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -113,11 +101,29 @@ namespace MoneyManagement.Services
             {
                 _logger.LogError(ex.Message);
                 return null;
-
             }
-
         }
 
+        public async Task<Balance> DeleteBalance(Balance item)
+        {
+            try
+            {
+                var existingBalance = await _context.Balance.Include(c => c.Account).Include(c => c.Account.Currency)
+                    .Where(x => x.Id == item.Id).FirstOrDefaultAsync();
+                
+                existingBalance.LastUpdatedDate = DateTime.Now;
+                existingBalance.IsActive = false;
 
+                _context.Balance.Update(existingBalance);
+                await _context.SaveChangesAsync();
+
+                return item;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
+            }
+        }
     }
 }

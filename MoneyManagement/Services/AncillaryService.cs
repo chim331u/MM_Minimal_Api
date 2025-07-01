@@ -58,9 +58,24 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
+                var existingCountry = await _context.Country.FindAsync(item.Id);
+                
+                if (existingCountry == null)
+                {
+                    _logger.LogWarning($"Country with ID {item.Id} not found.");
+                    return null;
+                }
+                
+                // Update the properties of the existing country
+                existingCountry.Name = item.Name;
+                existingCountry.CountryCodeNum3 = item.CountryCodeNum3;
+                existingCountry.CountryCodeALF3 = item.CountryCodeALF3;
+                existingCountry.IsActive = item.IsActive;
+                existingCountry.LastUpdatedDate = DateTime.Now;
+                existingCountry.Description = item.Description;
+                existingCountry.Note = item.Note;
 
-                var result = _context.Country.Update(item);
+                _context.Country.Update(existingCountry);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -99,10 +114,17 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
+                var existingCountry = await _context.Country.FindAsync(item.Id);
+                
+                if (existingCountry == null)
+                {
+                    _logger.LogWarning($"Country with ID {item.Id} not found.");
+                    return null;
+                }
+                existingCountry.LastUpdatedDate = DateTime.Now;
+                existingCountry.IsActive = false;
 
-                var result = _context.Country.Update(item);
+                var result = _context.Country.Update(existingCountry);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -155,9 +177,23 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
+                var existingCurrency = await _context.Currency.FindAsync(item.Id);
+                
+                if (existingCurrency == null)
+                {
+                    _logger.LogWarning($"Currency with ID {item.Id} not found.");
+                    return null;
+                }
+                // Update the properties of the existing currency
+                existingCurrency.Name = item.Name;
+                existingCurrency.CurrencyCodeNum3 = item.CurrencyCodeNum3;
+                existingCurrency.CurrencyCodeALF3 = item.CurrencyCodeALF3;
+                existingCurrency.IsActive = item.IsActive;
+                existingCurrency.LastUpdatedDate = DateTime.Now;
+                existingCurrency.Description = item.Description;
+                existingCurrency.Note = item.Note;
 
-                var result = _context.Currency.Update(item);
+                _context.Currency.Update(existingCurrency);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -196,10 +232,17 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
+                var existingCurrency = await _context.Currency.FindAsync(item.Id);
+                
+                if (existingCurrency == null)
+                {
+                    _logger.LogWarning($"Currency with ID {item.Id} not found.");
+                    return null;
+                }
+                existingCurrency.LastUpdatedDate = DateTime.Now;
+                existingCurrency.IsActive = false;
 
-                var result = _context.Currency.Update(item);
+                _context.Currency.Update(existingCurrency);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -270,9 +313,22 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-
-                var result = _context.CurrencyConversionRates.Update(item);
+                var existingRate = await _context.CurrencyConversionRates.FindAsync(item.Id);
+                if (existingRate == null)
+                {
+                    _logger.LogWarning($"CurrencyConversionRate with ID {item.Id} not found.");
+                    return null;
+                }
+                // Update the properties of the existing rate
+                existingRate.RateValue = item.RateValue;
+                existingRate.CurrencyCodeALF3 = item.CurrencyCodeALF3;
+                existingRate.IsActive = item.IsActive;
+                existingRate.LastUpdatedDate = DateTime.Now;
+                existingRate.ReferringDate = item.ReferringDate;
+                existingRate.UniqueKey = item.UniqueKey;
+                existingRate.Note = item.Note;
+                
+                _context.CurrencyConversionRates.Update(existingRate);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -544,9 +600,20 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
+                var existingUser = await _context.ServiceUser.FindAsync(item.Id);
+                if (existingUser == null)
+                {
+                    _logger.LogWarning($"ServiceUser with ID {item.Id} not found.");
+                    return null;
+                }
+                // Update the properties of the existing user
+                existingUser.Name = item.Name;
+                existingUser.Surname = item.Surname;
+                existingUser.IsActive = item.IsActive;
+                existingUser.Note = item.Note;
+                existingUser.LastUpdatedDate = DateTime.Now;
 
-                var result = _context.ServiceUser.Update(item);
+                _context.ServiceUser.Update(existingUser);
 
                 await _context.SaveChangesAsync();
 
@@ -587,10 +654,17 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
+                var existingUser = await _context.ServiceUser.FindAsync(item.Id);
+                if (existingUser == null)
+                {
+                    _logger.LogWarning($"ServiceUser with ID {item.Id} not found.");
+                    return null;
+                }
+                
+                existingUser.LastUpdatedDate = DateTime.Now;
+                existingUser.IsActive = false;
 
-                var result = _context.ServiceUser.Update(item);
+                _context.ServiceUser.Update(existingUser);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -644,9 +718,23 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
+                var existingSupplier = await _context.suppliers.FindAsync(item.Id);
+                if (existingSupplier == null)
+                {
+                    _logger.LogWarning($"Supplier with ID {item.Id} not found.");
+                    return null;
+                }
+                // Update the properties of the existing supplier
+                existingSupplier.Name = item.Name;
+                existingSupplier.IsActive = item.IsActive;
+                existingSupplier.Note = item.Note;
+                existingSupplier.Description = item.Description;
+                existingSupplier.Contract = item.Contract;
+                existingSupplier.LastUpdatedDate = DateTime.Now;
+                existingSupplier.UnitMeasure = item.UnitMeasure;
+                existingSupplier.Type = item.Type;
 
-                var result = _context.suppliers.Update(item);
+                 _context.suppliers.Update(existingSupplier);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -685,10 +773,17 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
+                var existingSupplier = await _context.suppliers.FindAsync(item.Id);
+                if (existingSupplier == null)
+                {
+                    _logger.LogWarning($"Supplier with ID {item.Id} not found.");
+                    return null;
+                }
+                
+                existingSupplier.LastUpdatedDate = DateTime.Now;
+                existingSupplier.IsActive = false;
 
-                var result = _context.suppliers.Update(item);
+                var result = _context.suppliers.Update(existingSupplier);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -756,9 +851,24 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-
-                var result = _context.readInBill.Update(item);
+                var _supplier = await _context.suppliers.FindAsync(item.Supplier.Id);
+                var existingBill = await _context.readInBill.FindAsync(item.Id);
+                if (existingBill == null)
+                {
+                    _logger.LogWarning($"ReadInBill with ID {item.Id} not found.");
+                    return null;
+                }
+                // Update the properties of the existing bill
+                existingBill.BillProperty = item.BillProperty;
+                existingBill.KeyWord = item.KeyWord;
+                existingBill.PropertyDataType = item.PropertyDataType;
+                existingBill.RegexString = item.RegexString;
+                existingBill.Supplier = _supplier;
+                existingBill.LastUpdatedDate = DateTime.Now;
+                existingBill.IsActive = item.IsActive;
+                existingBill.Note = item.Note;
+                
+                _context.readInBill.Update(existingBill);
                 await _context.SaveChangesAsync();
 
                 return item;
