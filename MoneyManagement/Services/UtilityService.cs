@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using MoneyManagement.AppContext;
 using MoneyManagement.Interfaces;
@@ -65,7 +66,7 @@ namespace MoneyManagement.Services
 
         public string EncryptString(ISA_Accounts item)
         {
-            string key = string.Concat(myKey, item.CreatedDate.ToString());
+            string key = string.Concat(myKey, item.CreatedDate.ToString(CultureInfo.InvariantCulture));
             string plainText = item.Password;
             byte[] iv = new byte[16];
             byte[] array;
@@ -126,7 +127,7 @@ namespace MoneyManagement.Services
         {
             try
             {
-                string key = string.Concat(myKey, item.CreatedDate.ToString());
+                string key = string.Concat(myKey, item.CreatedDate.ToString(CultureInfo.InvariantCulture));
                 string cipherText = item.Password;
                 byte[] iv = new byte[16];
                 byte[] buffer = Convert.FromBase64String(cipherText);

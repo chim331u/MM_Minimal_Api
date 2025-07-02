@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoneyManagement.AppContext;
 using MoneyManagement.Interfaces;
+using MoneyManagement.Models.AncillaryData;
 using MoneyManagement.Models.Salary;
 
 namespace MoneyManagement.Services

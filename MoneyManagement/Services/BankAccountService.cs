@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MoneyManagement.AppContext;
 using MoneyManagement.Interfaces;
 using MoneyManagement.Models.BankAccount;
@@ -20,12 +21,11 @@ namespace MoneyManagement.Services
 
         #region Bank
 
-        public async Task<ICollection<BankMasterData>> GetActiveBankList()
+        public async Task<ICollection<BankMasterData>?> GetActiveBankList()
         {
             try
             {
-                
-                var result = await _context.BankMasterData.Include("Country")
+                var result = await _context.BankMasterData.Include(x=>x.Country)
                     .Where(x => x.IsActive).OrderByDescending(x => x.CreatedDate).ToListAsync();
 
               return result;
@@ -33,49 +33,69 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieve bank active list: {ex.Message}");
                 return null;
             }
         }
 
-        public async Task<BankMasterData> GetBank(int bankId)
-            {
+        public async Task<BankMasterData?> GetBank(int bankId)
+        {
             try
             {
-                var result = await _context.BankMasterData.Include("Country").Where(x=>x.Id == bankId).FirstOrDefaultAsync();
+                var result = await _context.BankMasterData
+                    .Include(x=>x.Country)
+                    .Where(x=>x.Id == bankId).FirstOrDefaultAsync();
 
                 return result;
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieve bank {bankId}: {ex.Message}");
                 return null;
             }
         }
 
-        public async Task<BankMasterData> UpdateBank(BankMasterData item)
+        public async Task<BankMasterData?> UpdateBank(BankMasterData? item)
         {
            
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
+                var existingBank = await _context.BankMasterData.Include(x=>x.Country).Where(x=>x.Id==item.Id).FirstOrDefaultAsync();
 
-                var result = _context.BankMasterData.Update(item);
+                if (existingBank == null)
+                {
+                    _logger.LogWarning($"Bank to update not found");
+                    return null;
+                }
+                
+                existingBank.Address=item.Address;
+                existingBank.City=item.City;
+                existingBank.Name = item.Name;
+                existingBank.Description = item.Description;
+                existingBank.IsActive=item.IsActive;
+                existingBank.Mail=item.Mail;
+                existingBank.Phone=item.Phone;
+                existingBank.ReferenceName=item.ReferenceName;
+                existingBank.WebUrl=item.WebUrl;
+                existingBank.LastUpdatedDate = DateTime.Now;
+                existingBank.Note=item.Note;
+
+                _context.BankMasterData.Update(existingBank);
                 await _context.SaveChangesAsync();
 
                 return item;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Updating bank: {ex.Message}");
                 return null;
 
             }
 
         }
 
-        public async Task<BankMasterData> AddBank(BankMasterData item)
+        public async Task<BankMasterData?> AddBank(BankMasterData? item)
         {
             var country = await _context.Country.FindAsync(item.Country.Id);
            
@@ -85,36 +105,45 @@ namespace MoneyManagement.Services
                 item.IsActive = true;
                 item.Country = country;
 
-                var result = await _context.BankMasterData.AddAsync(item);
+                await _context.BankMasterData.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return item;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding bank: {ex.Message}");
                 return null;
 
             }
 
         }
 
-        public async Task<BankMasterData> DeleteBank(BankMasterData item)
+        public async Task<BankMasterData?> DeleteBank(BankMasterData? item)
         {
             
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
+                var existingBank = await _context.BankMasterData.Include(x=>x.Country).Where(x=> x.Id == item.Id).FirstOrDefaultAsync();
 
-                var result = _context.BankMasterData.Update(item);
+                if (existingBank == null)
+                {
+                    _logger.LogWarning($"Bank not found");
+                    return null;
+                }
+
+                existingBank.LastUpdatedDate = DateTime.Now;
+                existingBank.IsActive = false;
+
+                _context.BankMasterData.Update(existingBank);
+
                 await _context.SaveChangesAsync();
 
                 return item;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error deleting bank: {ex.Message}");
                 return null;
 
             }
@@ -125,64 +154,63 @@ namespace MoneyManagement.Services
 
         #region Account
 
-        public async Task<ICollection<AccountMasterData>> GetActiveAccountList()
+        public async Task<ICollection<AccountMasterData>?> GetActiveAccountList()
         {
             try
             {
-                var result = await _context.AccountMasterData.Include("Currency").Include("BankMasterData").Where(x => x.IsActive).OrderByDescending(x => x.CreatedDate).ToListAsync();
+                var result = await _context.AccountMasterData
+                    .Include(x=>x.Currency)
+                    .Include(x=>x.BankMasterData)
+                    .Where(x => x.IsActive)
+                    .OrderByDescending(x => x.CreatedDate).ToListAsync();
                 
-                //ICollection<Account_DTO> accountList = new List<Account_DTO>();
-
-                //foreach (var account in result)
-                //{
-                //    accountList.Add(await AccountFromDataToDTO(account));
-
-                //}
-                _logger.LogInformation($"TEST");
                 return result;
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieve Account list: {ex.Message}");
                 return null;
             }
         }
 
-        public async Task<AccountMasterData> GetAccount(int accountId)
+        public async Task<AccountMasterData?> GetAccount(int accountId)
         {
             try
             {
-                var result = await _context.AccountMasterData.Include("Currency").Include("BankMasterData").Where(x=>x.Id==accountId).FirstOrDefaultAsync();
+                var result = await _context.AccountMasterData
+                    .Include(x=>x.Currency)
+                    .Include(x=>x.BankMasterData)
+                    .Where(x=>x.Id==accountId).FirstOrDefaultAsync();
                 
-                if (result == null)
-                { return null; }
-
                 return result;
 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieve Account {accountId}: {ex.Message}");
                 return null;
             }
         }
 
-        public async Task<AccountMasterData> UpdateAccount(AccountMasterData item)
+        public async Task<AccountMasterData?> UpdateAccount(AccountMasterData? item)
         {
-            //var account = await AccountFromDTOToData(item);
-
             try
             {
-                //account.LastUpdatedDate = DateTime.Now;
+                var existingAccount = await _context.AccountMasterData
+                    .Include(x=>x.Currency)
+                    .Include(x=>x.BankMasterData).Where(x=>x.Id==item.Id).FirstOrDefaultAsync();
 
-                //var result = _context.AccountMasterData.Update(account);
-                //await _context.SaveChangesAsync();
+                if (existingAccount == null)
+                {
+                    _logger.LogWarning($"Account to update not found");
+                    return null;
+                }
+                
+                existingAccount.AccountType = item.AccountType;
+                existingAccount.LastUpdatedDate = DateTime.Now;
 
-                //return await AccountFromDataToDTO(account); 
-                item.LastUpdatedDate = DateTime.Now;
-
-                var result = _context.AccountMasterData.Update(item);
+                _context.AccountMasterData.Update(item);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -196,17 +224,30 @@ namespace MoneyManagement.Services
 
         }
 
-        public async Task<AccountMasterData> AddAccount(AccountMasterData item)
+        public async Task<AccountMasterData?> AddAccount(AccountMasterData? item)
         {
-            var currency = await _context.Currency.FindAsync(item.Currency.Id);
-            var bank = await _context.BankMasterData.FindAsync(item.BankMasterData.Id);
-            //var account = await AccountFromDTOToData(item);
+            if (item == null)
+            {
+                _logger.LogWarning($"Account to add not found");
+                return null;
 
-            //if (account == null)
-            //{
-            //    account = new AccountMasterData();
-            //    account.CreatedDate = DateTime.Now;
-            //}
+            }
+
+            if (item.Currency == null)
+            {
+                _logger.LogWarning($"Currency for Account to add not found");
+                return null;
+                    
+            }
+
+            var currency = await _context.Currency.FindAsync(item.Currency.Id);
+            if (item.BankMasterData == null)
+            {
+                _logger.LogWarning($"Bank for Account to add not found");
+                return null;
+            }
+
+            var bank = await _context.BankMasterData.FindAsync(item.BankMasterData.Id);
 
             try
             {
@@ -215,85 +256,44 @@ namespace MoneyManagement.Services
                 item.BankMasterData = bank;
                 item.Currency = currency;
 
-                var result = await _context.AccountMasterData.AddAsync(item);
-                await _context.SaveChangesAsync();
-
-                return item; 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return null;
-
-            }
-
-        }
-
-        public async Task<AccountMasterData> DeleteAccount(AccountMasterData item)
-        {
-            //var account = await AccountFromDTOToData(item);
-
-            try
-            {
-                item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
-
-                var result = _context.AccountMasterData.Update(item);
+                await _context.AccountMasterData.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return item;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding new account : {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<AccountMasterData?> DeleteAccount(AccountMasterData? item)
+        {
+            try
+            {
+                if (item == null)
+                {
+                    _logger.LogWarning($"Account to delete not found");
+                    return null;
+                }
+
+                item.LastUpdatedDate = DateTime.Now;
+                item.IsActive = false;
+
+                _context.AccountMasterData.Update(item);
+                await _context.SaveChangesAsync();
+
+                return item;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error deleting new account : {ex.Message}");
                 return null;
 
             }
 
         }
-
-        //private async Task<Account_DTO> AccountFromDataToDTO(AccountMasterData item)
-        //{
-        //    var result = new Account_DTO
-        //    {
-        //        Id = item.Id, AccountType = item.AccountType, Bic = item.Bic, Conto = item.Conto, Description = item.Description, 
-        //        Iban = item.Iban, Name = item.Name, Note = item.Note, BankId = item.BankMasterData.Id, BankName = item.BankMasterData.Name,
-        //        CreatedDate = item.CreatedDate, CurrencyId = item.Currency.Id, CurrencyName = item.Currency.Name, Currency=item.Currency
-            
-        //    };
-        //    return result;
-        //}
-
-        //private async Task<AccountMasterData> AccountFromDTOToData(Account_DTO item)
-        //{
-        //    var currency = await _context.Currency.Where(x => x.Name == item.CurrencyName).FirstOrDefaultAsync();
-        //    var bank = await _context.BankMasterData.Where(x => x.Name == item.BankName).FirstOrDefaultAsync();
-
-        //    var accountMasterData = await _context.AccountMasterData.FindAsync(item.Id);
-
-        //    if (accountMasterData == null)
-        //    {
-        //        accountMasterData = new AccountMasterData();
-        //        accountMasterData.CreatedDate = DateTime.Now;
-        //    }
-
-        //    accountMasterData.Name = item.Name;
-        //    accountMasterData.Conto = item.Conto;
-        //    accountMasterData.Description = item.Description;
-        //    accountMasterData.Iban = item.Iban;
-        //    accountMasterData.Bic = item.Bic;
-        //    accountMasterData.AccountType = item.AccountType;
-        //    accountMasterData.CreatedDate = item.CreatedDate;
-        //    accountMasterData.Note = item.Note;
-        //    accountMasterData.Currency = currency;
-        //    accountMasterData.BankMasterData = bank;
-
-
-        //    return accountMasterData;
-
-
-        //}
-
         #endregion
 
     }

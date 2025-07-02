@@ -136,7 +136,7 @@ namespace MoneyManagement.Services
 
         }
 
-        public async Task<IList<SpentChart>> GetSpentChart(IList<BalanceLineChart> totBalanceByDateEur, IList<SalaryChart> salaryAll)
+        public Task<IList<SpentChart>> GetSpentChart(IList<BalanceLineChart> totBalanceByDateEur, IList<SalaryChart> salaryAll)
         {
             IList<SpentChart> spentChar = new List<SpentChart>();
 
@@ -171,7 +171,7 @@ namespace MoneyManagement.Services
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    return null;
+                    return Task.FromResult<IList<SpentChart>>(null);
                 }
 
 
@@ -189,7 +189,7 @@ namespace MoneyManagement.Services
                 spentChar.Add(new SpentChart { SpentDate = new DateTime(totBalanceByDateEur[i].DateBalance.Year, totBalanceByDateEur[i].DateBalance.Month, 1), SpentAmount = Math.Round(exit, 2) });
             }
 
-            return spentChar;
+            return Task.FromResult(spentChar);
 
         }
 

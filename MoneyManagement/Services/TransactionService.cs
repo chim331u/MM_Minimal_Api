@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using MoneyManagement.AppContext;
@@ -197,7 +198,7 @@ namespace MoneyManagement.Services
                 }
                 item.CreatedDate = DateTime.Now;
                 item.IsActive = true;
-                item.UniqueKey = MD5UniqueKey(item.Account.Name, item.TxnDate.ToString(), item.TxnAmount.ToString(), item.Description);
+                item.UniqueKey = MD5UniqueKey(item.Account.Name, item.TxnDate.ToString(CultureInfo.InvariantCulture), item.TxnAmount.ToString(CultureInfo.InvariantCulture), item.Description);
                 item.Account = account;
 
                 if (_context.Transaction.Where(x => x.UniqueKey == item.UniqueKey).Any())
