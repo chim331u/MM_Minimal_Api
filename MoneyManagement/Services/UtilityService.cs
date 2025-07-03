@@ -167,7 +167,7 @@ namespace MoneyManagement.Services
         public string TimeDiff(DateTime start, DateTime end)
         {
             TimeSpan _span = end - start;
-            return string.Concat(((int)_span.TotalMilliseconds).ToString(), " ms");
+            return string.Concat("[",((int)_span.TotalMilliseconds).ToString(), " ms]");
         }
     }
 }

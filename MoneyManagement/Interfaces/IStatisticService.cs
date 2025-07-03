@@ -1,10 +1,9 @@
 ﻿using MoneyManagement.Models.Statistics;
 
-namespace MoneyManagement.Interfaces
+namespace MoneyManagement.Interfaces;
+
+public interface IStatisticService
 {
-    public interface IStatisticService
-    {
-        Task<Dashboard> GetDashboard();
-        Task<List<SalaryStatistics>> GetSalaryStatistic(int userId);
-    }
+    Task<Dashboard> GetDashboard();
+    Task<List<SalaryStatistics>> GetSalaryStatistic(int userId);
 }

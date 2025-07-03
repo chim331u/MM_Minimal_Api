@@ -18,12 +18,13 @@ namespace MoneyManagement.Services
             _logger = logger;
             _context = context;
             _utilityService = utilityService;
-            
-            Task.Run(async () =>
-            {
-                await UpdateCurrencyRate();
-                _logger.LogInformation("Update currency rate Async task completed.");
-            });
+            //
+            // Task.Run(async () =>
+            // {
+            //     await
+            UpdateCurrencyRate();
+            //     _logger.LogInformation("Update currency rate Async task completed.");
+            // });
         }
 
         #region Country

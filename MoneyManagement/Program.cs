@@ -78,4 +78,24 @@ app.MapGroup("/api/v1/")
     //.RequireAuthorization()
     .MapCurrencyEndPoint();
 
+app.MapGroup("/api/v1/")
+    .WithTags(" Account endpoints")
+    //.RequireAuthorization()
+    .MapAccountEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Bank endpoints")
+    //.RequireAuthorization()
+    .MapBankEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Balance endpoints")
+    //.RequireAuthorization()
+    .MapBalanceEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Salary endpoints")
+    //.RequireAuthorization()
+    .MapSalaryEndPoint();
+
 app.Run();
