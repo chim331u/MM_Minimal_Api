@@ -18,7 +18,12 @@ namespace MoneyManagement.Services
             _logger = logger;
             _context = context;
             _utilityService = utilityService;
-            UpdateCurrencyRate();
+            
+            Task.Run(async () =>
+            {
+                await UpdateCurrencyRate();
+                _logger.LogInformation("Update currency rate Async task completed.");
+            });
         }
 
         #region Country
@@ -93,17 +98,23 @@ namespace MoneyManagement.Services
         {
             try
             {
+                if (item == null)
+                {
+                    _logger.LogWarning($"Country to add is null");
+                    return null;
+                }
+
                 item.CreatedDate = DateTime.Now;
                 item.IsActive = true;
 
-                var result = await _context.Country.AddAsync(item);
+                await _context.Country.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return await _context.Country.FindAsync(item.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding new Country: {ex.Message}");
                 return null;
 
             }
@@ -124,7 +135,7 @@ namespace MoneyManagement.Services
                 existingCountry.LastUpdatedDate = DateTime.Now;
                 existingCountry.IsActive = false;
 
-                var result = _context.Country.Update(existingCountry);
+                _context.Country.Update(existingCountry);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -147,7 +158,7 @@ namespace MoneyManagement.Services
         {
             try
             {
-                var result = await _context.Currency.Where(x => x.IsActive).ToListAsync();
+                var result = await _context.Currency.Where(x => x!.IsActive).ToListAsync();
                 return result;
 
             }
@@ -158,11 +169,11 @@ namespace MoneyManagement.Services
             }
         }
 
-        public async Task<Currency> GetCurrency(int Id)
+        public async Task<Currency> GetCurrency(int id)
         {
             try
             {
-                var result = await _context.Currency.FindAsync(Id);
+                var result = await _context.Currency.FindAsync(id);
                 return result;
 
             }
@@ -211,10 +222,16 @@ namespace MoneyManagement.Services
         {
             try
             {
+                if (item == null)
+                {
+                    _logger.LogWarning($"Currency to add is null");
+                    return null;
+                }
+
                 item.CreatedDate = DateTime.Now;
                 item.IsActive = true;
 
-                var result = await _context.Currency.AddAsync(item);
+                await _context.Currency.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return await _context.Currency.FindAsync(item.Id);
@@ -276,11 +293,11 @@ namespace MoneyManagement.Services
             }
         }
 
-        public async Task<CurrencyConversionRate> GetCurrencyConversion(int Id)
+        public async Task<CurrencyConversionRate> GetCurrencyConversion(int id)
         {
             try
             {
-                var result = await _context.CurrencyConversionRates.FindAsync(Id);
+                var result = await _context.CurrencyConversionRates.FindAsync(id);
                 return result;
 
             }
@@ -291,11 +308,11 @@ namespace MoneyManagement.Services
             }
         }
 
-        public async Task<CurrencyConversionRate> GetCurrencyRate(string currencyALF3)
+        public async Task<CurrencyConversionRate> GetCurrencyRate(string currencyAlf3)
         {
             try
             {
-                var result = await _context.CurrencyConversionRates.Where(c => c.IsActive == true && c.CurrencyCodeALF3.ToUpper() == currencyALF3.ToUpper())
+                var result = await _context.CurrencyConversionRates.Where(c => c.IsActive == true && c.CurrencyCodeALF3.ToUpper() == currencyAlf3.ToUpper())
                 .OrderByDescending(c => c.ReferringDate)
                 .FirstOrDefaultAsync();
 
@@ -311,6 +328,7 @@ namespace MoneyManagement.Services
 
         public async Task<CurrencyConversionRate> UpdateCurrencyConversion(CurrencyConversionRate item)
         {
+
             try
             {
                 var existingRate = await _context.CurrencyConversionRates.FindAsync(item.Id);
@@ -344,8 +362,6 @@ namespace MoneyManagement.Services
 
         public async Task<CurrencyConversionRate> AddCurrencyConversion(CurrencyConversionRate item)
         {
-            var uniqueK = string.Concat(item.CurrencyCodeALF3, item.RateValue.ToString(), DateTime.Now.Date);
-
             try
             {
                 item.CreatedDate = DateTime.Now;
@@ -407,7 +423,9 @@ namespace MoneyManagement.Services
 
         public async Task<int> UpdateCurrencyRate()
         {
-
+            var _startTime = DateTime.Now;
+            _logger.LogInformation($"Start Update Currency Conversion Rates ... ");
+            
             if (await GetLastUpdateDate() < DateTime.Now.Date)
             {
                 var doc = new XmlDocument();
@@ -424,73 +442,9 @@ namespace MoneyManagement.Services
                     {
                         var currency = node.Attributes["currency"].Value;
 
-                        if (currentCurrencies.Where(x => x.CurrencyCodeALF3 == currency).Any())
-                        {
-                            var rate = Decimal.Parse(node.Attributes["rate"].Value, NumberStyles.Any, new CultureInfo("en-Us"));
-                            var uniqueK = string.Concat(currency, rate.ToString(), DateTime.Now.Date);
-
-                            bool isCodeExist = _context.CurrencyConversionRates.Any(c => c.UniqueKey == uniqueK && c.IsActive == true);
-
-                            if (!isCodeExist)
-                            {
-                                await AddCurrencyConversion(new CurrencyConversionRate
-                                {
-                                    CreatedDate = DateTime.Now,
-                                    CurrencyCodeALF3 = currency,
-                                    IsActive = true,
-                                    LastUpdatedDate = DateTime.Now,
-                                    ReferringDate = DateTime.Now,
-                                    RateValue = rate,
-                                    UniqueKey = uniqueK
-                                });
-                            }
-
-                        }
-
-                    }
-
-                    try
-                    {
-                        var result = _context.SaveChanges();
-                        _logger.LogInformation("Currency rate updated");
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex.Message);
-                        return -2;
-                    }
-
-                }
-
-                _logger.LogWarning("Currency rate NOT updated");
-                return -1;
-            }
-            else
-            {
-                _logger.LogInformation("Currency rate already updated");
-                return 1;
-            }
-
-        }
-
-        public async Task<int> UpdateAllCurrencyRate()
-        {
-            if (await GetLastUpdateDate() < DateTime.Now.Date)
-            {
-                var doc = new XmlDocument();
-                doc.Load(@"http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
-
-                XmlNodeList nodes = doc.SelectNodes("//*[@currency]");
-
-                if (nodes != null)
-                {
-                    //int counter = 0;
-                    foreach (XmlNode node in nodes)
-                    {
-                        var currency = node.Attributes["currency"].Value;
+                        if (!currentCurrencies.Any(x => x.CurrencyCodeALF3 == currency)) continue;
                         var rate = Decimal.Parse(node.Attributes["rate"].Value, NumberStyles.Any, new CultureInfo("en-Us"));
-                        var uniqueK = string.Concat(currency, rate.ToString(), DateTime.Now.Date);
+                        var uniqueK = string.Concat(currency, rate.ToString(CultureInfo.InvariantCulture), DateTime.Now.Date);
 
                         bool isCodeExist = _context.CurrencyConversionRates.Any(c => c.UniqueKey == uniqueK && c.IsActive == true);
 
@@ -512,7 +466,67 @@ namespace MoneyManagement.Services
 
                     try
                     {
-                        var result = _context.SaveChanges();
+                        var result = await _context.SaveChangesAsync();
+                        
+                        _logger.LogInformation($"Currency rate updated in {_utilityService.TimeDiff(_startTime, DateTime.Now)}");
+                        return result;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error updating currency rate: {ex.Message}");
+                        return -2;
+                    }
+
+                }
+
+                _logger.LogWarning($"Currency rates NOT updated {_utilityService.TimeDiff(_startTime, DateTime.Now)}");
+                return -1;
+            }
+
+            _logger.LogInformation($"Currency rates already updated {_utilityService.TimeDiff(_startTime, DateTime.Now)}");
+            return 1;
+
+        }
+
+        public async Task<int> UpdateAllCurrencyRate()
+        {
+            if (await GetLastUpdateDate() < DateTime.Now.Date)
+            {
+                var doc = new XmlDocument();
+                doc.Load(@"http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml");
+
+                XmlNodeList nodes = doc.SelectNodes("//*[@currency]");
+
+                if (nodes != null)
+                {
+                    //int counter = 0;
+                    foreach (XmlNode node in nodes)
+                    {
+                        var currency = node.Attributes["currency"].Value;
+                        var rate = Decimal.Parse(node.Attributes["rate"].Value, NumberStyles.Any, new CultureInfo("en-Us"));
+                        var uniqueK = string.Concat(currency, rate.ToString(CultureInfo.InvariantCulture), DateTime.Now.Date);
+
+                        bool isCodeExist = _context.CurrencyConversionRates.Any(c => c.UniqueKey == uniqueK && c.IsActive == true);
+
+                        if (!isCodeExist)
+                        {
+                            await AddCurrencyConversion(new CurrencyConversionRate
+                            {
+                                CreatedDate = DateTime.Now,
+                                CurrencyCodeALF3 = currency,
+                                IsActive = true,
+                                LastUpdatedDate = DateTime.Now,
+                                ReferringDate = DateTime.Now,
+                                RateValue = rate,
+                                UniqueKey = uniqueK
+                            });
+                        }
+
+                    }
+
+                    try
+                    {
+                        var result = await _context.SaveChangesAsync();
                         _logger.LogInformation("Currency rate updated");
                         return result;
                     }
@@ -551,7 +565,7 @@ namespace MoneyManagement.Services
                     _context.CurrencyConversionRates.Update(item);
                 }
 
-                var result = _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 _logger.LogInformation("Clear Currency rate completed");
                 return "Deleted unused currency rates";
             }
@@ -636,7 +650,7 @@ namespace MoneyManagement.Services
                 item.IsActive = true;
                 item.LastUpdatedDate = DateTime.Now;
 
-                var result = await _context.ServiceUser.AddAsync(item);
+                await _context.ServiceUser.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -755,7 +769,7 @@ namespace MoneyManagement.Services
                 item.CreatedDate = DateTime.Now;
                 item.IsActive = true;
 
-                var result = await _context.suppliers.AddAsync(item);
+                await _context.suppliers.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return await _context.suppliers.FindAsync(item.Id);
@@ -783,7 +797,7 @@ namespace MoneyManagement.Services
                 existingSupplier.LastUpdatedDate = DateTime.Now;
                 existingSupplier.IsActive = false;
 
-                var result = _context.suppliers.Update(existingSupplier);
+                _context.suppliers.Update(existingSupplier);
                 await _context.SaveChangesAsync();
 
                 return item;
@@ -802,7 +816,7 @@ namespace MoneyManagement.Services
         #region ReadInBill
 
 
-        public async Task<ICollection<ReadInBill>> GetActiveReadInBillList()
+        public async Task<ICollection<ReadInBill>?> GetActiveReadInBillList()
         {
             try
             {
@@ -847,11 +861,11 @@ namespace MoneyManagement.Services
             }
         }
 
-        public async Task<ReadInBill> UpdateReadInBill(ReadInBill item)
+        public async Task<ReadInBill?> UpdateReadInBill(ReadInBill? item)
         {
             try
             {
-                var _supplier = await _context.suppliers.FindAsync(item.Supplier.Id);
+                var supplier = await _context.suppliers.FindAsync(item.Supplier.Id);
                 var existingBill = await _context.readInBill.FindAsync(item.Id);
                 if (existingBill == null)
                 {
@@ -863,7 +877,7 @@ namespace MoneyManagement.Services
                 existingBill.KeyWord = item.KeyWord;
                 existingBill.PropertyDataType = item.PropertyDataType;
                 existingBill.RegexString = item.RegexString;
-                existingBill.Supplier = _supplier;
+                existingBill.Supplier = supplier;
                 existingBill.LastUpdatedDate = DateTime.Now;
                 existingBill.IsActive = item.IsActive;
                 existingBill.Note = item.Note;
@@ -882,7 +896,7 @@ namespace MoneyManagement.Services
 
         }
 
-        public async Task<ReadInBill> AddReadInBill(ReadInBill item)
+        public async Task<ReadInBill?> AddReadInBill(ReadInBill? item)
         {
             try
             {
@@ -891,7 +905,7 @@ namespace MoneyManagement.Services
 
                 item.Supplier = await _context.suppliers.FindAsync(item.Supplier.Id);
 
-                var result = await _context.readInBill.AddAsync(item);
+                await _context.readInBill.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return await _context.readInBill.FindAsync(item.Id);
@@ -905,14 +919,14 @@ namespace MoneyManagement.Services
 
         }
 
-        public async Task<ReadInBill> DeleteReadInBill(ReadInBill item)
+        public async Task<ReadInBill?> DeleteReadInBill(ReadInBill? item)
         {
             try
             {
                 item.LastUpdatedDate = DateTime.Now;
                 item.IsActive = false;
 
-                var result = _context.readInBill.Update(item);
+                _context.readInBill.Update(item);
                 await _context.SaveChangesAsync();
 
                 return item;

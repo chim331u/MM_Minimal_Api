@@ -19,11 +19,11 @@ namespace MoneyManagement.AppContext;
 /// </summary>
 public class ApplicationContext(DbContextOptions<ApplicationContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
-    // // Default schema for the database context
-
+    // Default schema for the database context
     
     public DbSet<BankMasterData> BankMasterData { get; set; }
     public DbSet<AccountMasterData> AccountMasterData { get; set; }
+    
     public DbSet<CardMasterData> CardMasterData { get; set; }
     public DbSet<Country> Country { get; set; }
     public DbSet<Currency> Currency { get; set; }

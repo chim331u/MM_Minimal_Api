@@ -17,6 +17,6 @@ namespace MoneyManagement.Interfaces
         string DecryptString(ISA_Accounts item);
         #endregion
 
-
+        string TimeDiff(DateTime start, DateTime end);
     }
 }
