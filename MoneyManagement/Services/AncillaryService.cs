@@ -27,9 +27,8 @@ namespace MoneyManagement.Services
             // });
         }
 
-        #region Country
-
-
+        #region Country *
+        
         public async Task<ICollection<Country>> GetActiveCountryList()
         {
             try
@@ -40,7 +39,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error getting active country list {ex.Message}");
                 return null;
             }
         }
@@ -55,7 +54,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching country {ex.Message}");
                 return null;
             }
         }
@@ -88,7 +87,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating country {ex.Message}");
                 return null;
 
             }
@@ -152,7 +151,7 @@ namespace MoneyManagement.Services
 
         #endregion
 
-        #region Currency
+        #region Currency *
 
 
         public async Task<ICollection<Currency>> GetActiveCurrencyList()
@@ -165,7 +164,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching active currency list {ex.Message}");
                 return null;
             }
         }
@@ -180,7 +179,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching active currency {ex.Message}");
                 return null;
             }
         }
@@ -212,7 +211,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating Currency: {ex.Message}");
                 return null;
 
             }
@@ -239,7 +238,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding new Currency: {ex.Message} ");
                 return null;
 
             }
@@ -267,7 +266,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error deleting currency {ex.Message}");
                 return null;
 
             }
@@ -289,7 +288,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching Currency conversion list: {ex.Message}");
                 return null;
             }
         }
@@ -304,7 +303,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching currency conversion: {ex.Message}");
                 return null;
             }
         }
@@ -322,7 +321,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching currency rate: {ex.Message}");
                 return null;
             }
         }
@@ -354,7 +353,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating currency conversion: {ex.Message}");
                 return null;
 
             }
@@ -368,14 +367,14 @@ namespace MoneyManagement.Services
                 item.CreatedDate = DateTime.Now;
                 item.IsActive = true;
 
-                var result = await _context.CurrencyConversionRates.AddAsync(item);
+                await _context.CurrencyConversionRates.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 return await _context.CurrencyConversionRates.FindAsync(item.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding new Currency Conversion Rate: {ex.Message}");
                 return null;
 
             }
@@ -396,7 +395,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error deleting currency conversion Rate: {ex.Message}");
                 return null;
 
             }
@@ -415,7 +414,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching currency rate / last update date: {ex.Message}");
                 return DateTime.MinValue;
 
             }
@@ -451,6 +450,7 @@ namespace MoneyManagement.Services
 
                         if (!isCodeExist)
                         {
+                            //todo: check if is possible to call the save change 1 only
                             await AddCurrencyConversion(new CurrencyConversionRate
                             {
                                 CreatedDate = DateTime.Now,
@@ -461,7 +461,20 @@ namespace MoneyManagement.Services
                                 RateValue = rate,
                                 UniqueKey = uniqueK
                             });
+                            
+                            // await _context.CurrencyConversionRates.AddAsync(new CurrencyConversionRate
+                            //                   {
+                            //                       CreatedDate = DateTime.Now,
+                            //                       CurrencyCodeALF3 = currency,
+                            //                       IsActive = true,
+                            //                       LastUpdatedDate = DateTime.Now,
+                            //                       ReferringDate = DateTime.Now,
+                            //                       RateValue = rate,
+                            //                       UniqueKey = uniqueK
+                            //                       
+                            //                   });
                         }
+                        
 
                     }
 
@@ -489,6 +502,8 @@ namespace MoneyManagement.Services
 
         }
 
+        //Deprecated
+        //TODO delete method: duplicated
         public async Task<int> UpdateAllCurrencyRate()
         {
             if (await GetLastUpdateDate() < DateTime.Now.Date)
@@ -511,6 +526,7 @@ namespace MoneyManagement.Services
 
                         if (!isCodeExist)
                         {
+                            //add new entry
                             await AddCurrencyConversion(new CurrencyConversionRate
                             {
                                 CreatedDate = DateTime.Now,
@@ -572,7 +588,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error clearing currency rates: {ex.Message}");
                 return null;
             }
 
@@ -580,7 +596,7 @@ namespace MoneyManagement.Services
         }
         #endregion
 
-        #region Service User
+        #region Service User *
         public async Task<ICollection<ServiceUser>> GetActiveServiceUserList()
         {
             try
@@ -591,7 +607,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching  active serviceUser list: {ex.Message}");
                 return null;
             }
         }
@@ -606,7 +622,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error  fetching serviceUser: {ex.Message}");
                 return null;
             }
         }
@@ -636,7 +652,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating  serviceUser: {ex.Message}");
                 return null;
 
             }
@@ -658,7 +674,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding serviceUser: {ex.Message}");
                 return null;
 
             }
@@ -686,7 +702,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error deleting serviceUser: {ex.Message}");
                 return null;
 
             }
@@ -696,7 +712,7 @@ namespace MoneyManagement.Services
 
         #endregion
 
-        #region Supplier
+        #region Supplier *
 
 
         public async Task<ICollection<Supplier>> GetActiveSupplierList()
@@ -709,7 +725,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching Active supplier list: {ex.Message}");
                 return null;
             }
         }
@@ -724,7 +740,8 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error fetching supplier {ex.Message}");
+                    
                 return null;
             }
         }
@@ -756,7 +773,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating  supplier {ex.Message}");
                 return null;
 
             }
@@ -777,7 +794,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding supplier {ex.Message}");
                 return null;
 
             }
@@ -805,7 +822,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error deleting supplier {ex.Message}");
                 return null;
 
             }
@@ -814,7 +831,7 @@ namespace MoneyManagement.Services
 
         #endregion
 
-        #region ReadInBill
+        #region ReadInBill *
 
 
         public async Task<ICollection<ReadInBill>?> GetActiveReadInBillList()
@@ -827,7 +844,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error getting Active readinbill list: {ex.Message}");
                 return null;
             }
         }        
@@ -842,7 +859,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error getting Active readinbill list by suppllier: {ex.Message}");
                 return null;
             }
         }
@@ -857,7 +874,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error getting Active readinbill {ex.Message}");
                 return null;
             }
         }
@@ -890,7 +907,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating read inbill {ex.Message}");
                 return null;
 
             }
@@ -913,7 +930,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding readinbill {ex.Message}");
                 return null;
 
             }
@@ -934,7 +951,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error deleting read inbill {ex.Message}");
                 return null;
 
             }
