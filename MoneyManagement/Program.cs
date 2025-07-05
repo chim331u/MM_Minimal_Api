@@ -68,7 +68,7 @@ app.MapGroup("/api/v1/")
     .WithTags(" Access endpoints")
     .MapAccessEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Country/")
     .WithTags(" Country endpoints")
     //.RequireAuthorization()
     .MapCountryEndPoint();
@@ -97,5 +97,40 @@ app.MapGroup("/api/v1/")
     .WithTags(" Salary endpoints")
     //.RequireAuthorization()
     .MapSalaryEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" CurrencyConvRate endpoints")
+    //.RequireAuthorization()
+    .MapCurrencyRateEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Read Bill endpoint endpoints")
+    //.RequireAuthorization()
+    .MapReadInBillEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Supplier endpoints")
+    //.RequireAuthorization()
+    .MapSupplierEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Service User endpoints")
+    //.RequireAuthorization()
+    .MapServiceUserEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" Bill endpoints")
+    //.RequireAuthorization()
+    .MapBillEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" House Things endpoints")
+    //.RequireAuthorization()
+    .MapHouseThingsEndPoint();
+
+app.MapGroup("/api/v1/")
+    .WithTags(" House Things Room endpoints")
+    //.RequireAuthorization()
+    .MapHouseThingsRoomEndPoint();
 
 app.Run();

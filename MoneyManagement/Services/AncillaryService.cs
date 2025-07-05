@@ -275,7 +275,7 @@ namespace MoneyManagement.Services
 
         #endregion
 
-        #region Currency Conversion Rate
+        #region Currency Conversion Rate *
 
 
         public async Task<ICollection<CurrencyConversionRate>> GetActiveCurrencyConversionList()
@@ -450,29 +450,28 @@ namespace MoneyManagement.Services
 
                         if (!isCodeExist)
                         {
-                            //todo: check if is possible to call the save change 1 only
-                            await AddCurrencyConversion(new CurrencyConversionRate
-                            {
-                                CreatedDate = DateTime.Now,
-                                CurrencyCodeALF3 = currency,
-                                IsActive = true,
-                                LastUpdatedDate = DateTime.Now,
-                                ReferringDate = DateTime.Now,
-                                RateValue = rate,
-                                UniqueKey = uniqueK
-                            });
+                            // await AddCurrencyConversion(new CurrencyConversionRate
+                            // {
+                            //     CreatedDate = DateTime.Now,
+                            //     CurrencyCodeALF3 = currency,
+                            //     IsActive = true,
+                            //     LastUpdatedDate = DateTime.Now,
+                            //     ReferringDate = DateTime.Now,
+                            //     RateValue = rate,
+                            //     UniqueKey = uniqueK
+                            // });
                             
-                            // await _context.CurrencyConversionRates.AddAsync(new CurrencyConversionRate
-                            //                   {
-                            //                       CreatedDate = DateTime.Now,
-                            //                       CurrencyCodeALF3 = currency,
-                            //                       IsActive = true,
-                            //                       LastUpdatedDate = DateTime.Now,
-                            //                       ReferringDate = DateTime.Now,
-                            //                       RateValue = rate,
-                            //                       UniqueKey = uniqueK
-                            //                       
-                            //                   });
+                            await _context.CurrencyConversionRates.AddAsync(new CurrencyConversionRate
+                                              {
+                                                  CreatedDate = DateTime.Now,
+                                                  CurrencyCodeALF3 = currency,
+                                                  IsActive = true,
+                                                  LastUpdatedDate = DateTime.Now,
+                                                  ReferringDate = DateTime.Now,
+                                                  RateValue = rate,
+                                                  UniqueKey = uniqueK
+                                                  
+                                              });
                         }
                         
 

@@ -16,7 +16,7 @@ public static class AccessEndPoint
         //     return result != null ? Results.Ok(result) : Results.NotFound();
         // });
         
-        app.MapPost("/Login", async (LoginModelDto authRequest, IIdentityService identityService) =>
+        app.MapPost("/login", async (LoginModelDto authRequest, IIdentityService identityService) =>
         {
             var result = await identityService.Login(authRequest);
             return result != null ? Results.Ok(result) : Results.NotFound();

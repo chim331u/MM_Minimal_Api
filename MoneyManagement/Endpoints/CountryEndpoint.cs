@@ -40,6 +40,16 @@ public static class CountryEndpoint
             return result != null ? Results.Ok(result) : Results.NotFound();
         });
         
+        app.MapPut("/DeleteCountry", async (Country item, IAncillaryService service) =>
+        {
+            if (item == null)
+            {
+                return Results.BadRequest("Country is null");
+            }
+            var result = await service.DeleteCountry(item);
+            return result != null ? Results.Ok() : Results.NotFound();
+        });
+        
         return app;
     }
     
