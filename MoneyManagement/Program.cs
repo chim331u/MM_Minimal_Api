@@ -138,4 +138,9 @@ app.MapGroup("/api/v1/")
     //.RequireAuthorization()
     .MapTransactionEndPoint();
 
+app.MapGroup("/api/v1/")
+    .WithTags(" Statistics endpoints")
+    //.RequireAuthorization()
+    .MapStatisticEndPoint();
+
 app.Run();
