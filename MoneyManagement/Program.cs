@@ -143,4 +143,9 @@ app.MapGroup("/api/v1/")
     //.RequireAuthorization()
     .MapStatisticEndPoint();
 
+app.MapGroup("/api/v1/")
+    .WithTags(" Identity Access endpoints")
+    //.RequireAuthorization()
+    .MapIdentityAccessEndPoint();
+
 app.Run();

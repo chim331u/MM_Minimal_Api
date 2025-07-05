@@ -38,7 +38,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieving active identity accounts: {ex.Message}");
                 return null;
             }
         }
@@ -53,7 +53,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieving identity account with ID {isaAccountId}: {ex.Message}");
                 return null;
             }
         }
@@ -62,17 +62,31 @@ namespace MoneyManagement.Services
         {
             try
             {
+                var existingIdentityAccount = await _context.ISA_Accounts.Include(x=>x.ISA_User).Include(x=>x.ISA_Tag)
+                    .Where(x=>x.Id==item.Id).FirstOrDefaultAsync();
 
-                item.LastUpdatedDate = DateTime.Now;
+                if (existingIdentityAccount == null)
+                {
+                    _logger.LogWarning($"Identity account with ID {item.Id} not found.");
+                    return null;
+                }
+                // Update the properties of the existing account
+                existingIdentityAccount.Name = item.Name;
+                existingIdentityAccount.Description = item.Description;
+                existingIdentityAccount.UserName = item.UserName;
+                existingIdentityAccount.WebUrl = item.WebUrl;
+                existingIdentityAccount.Note = item.Note;
+                existingIdentityAccount.IsActive = item.IsActive;
+                existingIdentityAccount.LastUpdatedDate = DateTime.Now;
 
-                var result = _context.ISA_Accounts.Update(item);
+                _context.ISA_Accounts.Update(item);
                 await _context.SaveChangesAsync();
 
                 return item;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating identity account with ID {item.Id}: {ex.Message}");
                 return null;
 
             }
@@ -85,18 +99,18 @@ namespace MoneyManagement.Services
             {
                 var person = await _anchillaryService.GetServiceUser(item.ISA_User.Id);
 
-
-                if (person != null)
+                if (person == null)
                 {
-                    item.ISA_User = person;
+                    _logger.LogWarning($"Person with ID {item.ISA_User.Id} not found.");
+                    return null;
                 }
 
-
+                item.ISA_User = person;
                 item.LastUpdatedDate = DateTime.Now;
                 item.CreatedDate = DateTime.Now;
                 item.IsActive = true;
 
-                var result = await _context.ISA_Accounts.AddAsync(item);
+                await _context.ISA_Accounts.AddAsync(item);
                 await _context.SaveChangesAsync();
 
                 item.Password = _utilityService.EncryptString(item);
@@ -106,7 +120,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error adding identity account: {ex.Message}");
                 return null;
 
             }
@@ -117,17 +131,24 @@ namespace MoneyManagement.Services
         {
             try
             {
-                item.LastUpdatedDate = DateTime.Now;
-                item.IsActive = false;
+                var existingIdentityAccount = await _context.ISA_Accounts.Include(x => x.ISA_User).Where(x => x.Id == item.Id).FirstOrDefaultAsync();
+                if (existingIdentityAccount == null)
+                {
+                    _logger.LogWarning($"Identity account with ID {item.Id} not found.");
+                    return null;
+                }
+                
+                existingIdentityAccount.LastUpdatedDate = DateTime.Now;
+                existingIdentityAccount.IsActive = false;
 
-                var result = _context.ISA_Accounts.Update(item);
+                _context.ISA_Accounts.Update(existingIdentityAccount);
                 await _context.SaveChangesAsync();
 
-                return item;
+                return existingIdentityAccount;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error deleting identity account with ID {item.Id}: {ex.Message}");
                 return null;
 
             }
@@ -153,7 +174,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieving password for account ID {isa_account_id}: {ex.Message}");
                 return null;
 
             }
@@ -170,13 +191,12 @@ namespace MoneyManagement.Services
 
             try
             {
-                var result = _context.ISA_Accounts.Update(item);
+                _context.ISA_Accounts.Update(item);
                 await _context.SaveChangesAsync();
-
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error updating password for account ID {item.Id}: {ex.Message}");
                 return ex.Message;
             }
 
@@ -197,7 +217,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error saving old password for account ID {item.Id}: {ex.Message}");
                 return ex.Message;
             }
 
@@ -213,7 +233,7 @@ namespace MoneyManagement.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error retrieving old passwords for account ID {accountId}: {ex.Message}");
                 return null;
             }
 
