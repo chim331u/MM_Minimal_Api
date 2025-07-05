@@ -13,5 +13,6 @@ namespace MoneyManagement.Interfaces
         Task<string> TrainModelTransaction();
         Task<string> CategorizeAllTransaction();
         Task<Transaction> DeleteTransaction(Transaction transaction);
+        Task<string> UploadCsv(IList<Transaction> transactions);
     }
 }

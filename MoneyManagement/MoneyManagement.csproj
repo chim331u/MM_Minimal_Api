@@ -46,7 +46,6 @@
 
     <ItemGroup>
       <Folder Include="Temp\Bill\" />
-      <Folder Include="Temp\MlModel\" />
       <Folder Include="Temp\MMLog\" />
     </ItemGroup>
 

@@ -133,4 +133,9 @@ app.MapGroup("/api/v1/")
     //.RequireAuthorization()
     .MapHouseThingsRoomEndPoint();
 
+app.MapGroup("/api/v1/")
+    .WithTags(" Transaction endpoints")
+    //.RequireAuthorization()
+    .MapTransactionEndPoint();
+
 app.Run();
