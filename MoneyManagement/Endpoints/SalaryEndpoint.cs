@@ -9,7 +9,7 @@ public static class SalaryEndpoint
     {
         // Define the endpoints
 
-        app.MapGet("/GetActiveSalaryList", async (ISalaryService salaryService) =>
+        app.MapGet("/GetSalaryList", async (ISalaryService salaryService) =>
         {
             var result = await salaryService.GetActiveSalaryList();
             return result is not null ? Results.Ok(result) : Results.NotFound();

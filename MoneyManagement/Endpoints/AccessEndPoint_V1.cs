@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Mvc;
+using MoneyManagement.Contract;
 using MoneyManagement.Interfaces;
 using MoneyManagement.Models.Access;
+using Newtonsoft.Json;
 
 namespace MoneyManagement.Endpoints;
 
-public static class AccessEndPoint
+public static class AccessEndPointV1
 {
-    public static IEndpointRouteBuilder MapAccessEndPoint(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapAccessEndPoint_V1(this IEndpointRouteBuilder app)
     {
         // app.MapGet("/login", async ([FromBody]AuthRequest authRequest, IAccessService service ) =>
         // {
@@ -13,7 +16,7 @@ public static class AccessEndPoint
         //     return result != null ? Results.Ok(result) : Results.NotFound();
         // });
         
-        app.MapPost("/login", async (AuthRequest authRequest, IIdentityService identityService) =>
+        app.MapPost("/login", async (LoginModelDto authRequest, IIdentityServiceV1 identityService) =>
         {
             var result = await identityService.Login(authRequest);
             return result != null ? Results.Ok(result) : Results.NotFound();

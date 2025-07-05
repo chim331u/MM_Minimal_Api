@@ -47,7 +47,9 @@ namespace MoneyManagement.Extensions
             builder.Services.AddScoped<IStatisticService, StatisticService>();
             builder.Services.AddScoped<IBillService, BillService>();
             builder.Services.AddScoped<IIdentityService, IdentityService>();
-            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IIdentityServiceV1, IdentityServiceV1>();
+            builder.Services.AddScoped<ITokenService_V1, TokenService_V1>();
+            builder.Services.AddScoped<TokenService, TokenService>();
             builder.Services.AddScoped<IHashicorpVaultService, HashiCorpVaultService>();
 
             // Adding validators from the current assembly

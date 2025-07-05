@@ -64,86 +64,93 @@ app.UseAuthentication(); //it is new line
 app.UseAuthorization();
 app.UseHttpsRedirection();
 
+
+//TODO add authentication to all endpoints
+
 app.MapGroup("/api/v1/")
+    .WithTags(" Access endpoints")
+    .MapAccessEndPoint_V1();
+
+app.MapGroup("/api/access/")
     .WithTags(" Access endpoints")
     .MapAccessEndPoint();
 
 app.MapGroup("/api/Country/")
     .WithTags(" Country endpoints")
-    //.RequireAuthorization()
+    .RequireAuthorization()
     .MapCountryEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Currency/")
     .WithTags(" Currency endpoints")
     //.RequireAuthorization()
     .MapCurrencyEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Account/")
     .WithTags(" Account endpoints")
     //.RequireAuthorization()
     .MapAccountEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Bank/")
     .WithTags(" Bank endpoints")
     //.RequireAuthorization()
     .MapBankEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Balance/")
     .WithTags(" Balance endpoints")
     //.RequireAuthorization()
     .MapBalanceEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Salary/")
     .WithTags(" Salary endpoints")
     //.RequireAuthorization()
     .MapSalaryEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/CurrencyConversion/")
     .WithTags(" CurrencyConvRate endpoints")
     //.RequireAuthorization()
     .MapCurrencyRateEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/ReadInBill/")
     .WithTags(" Read Bill endpoint endpoints")
     //.RequireAuthorization()
     .MapReadInBillEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Supplier/")
     .WithTags(" Supplier endpoints")
     //.RequireAuthorization()
     .MapSupplierEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/ServiceUser/")
     .WithTags(" Service User endpoints")
     //.RequireAuthorization()
     .MapServiceUserEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Bill/")
     .WithTags(" Bill endpoints")
     //.RequireAuthorization()
     .MapBillEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/HouseThings/")
     .WithTags(" House Things endpoints")
     //.RequireAuthorization()
     .MapHouseThingsEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/HouseThingsRooms/")
     .WithTags(" House Things Room endpoints")
     //.RequireAuthorization()
     .MapHouseThingsRoomEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Transaction/")
     .WithTags(" Transaction endpoints")
     //.RequireAuthorization()
     .MapTransactionEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/Statistic/")
     .WithTags(" Statistics endpoints")
     //.RequireAuthorization()
     .MapStatisticEndPoint();
 
-app.MapGroup("/api/v1/")
+app.MapGroup("/api/IdentiyAccess/")
     .WithTags(" Identity Access endpoints")
     //.RequireAuthorization()
     .MapIdentityAccessEndPoint();

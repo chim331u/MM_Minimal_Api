@@ -9,7 +9,7 @@ public static class HouseThingsRoomEndpoint
     public static IEndpointRouteBuilder MapHouseThingsRoomEndPoint(this IEndpointRouteBuilder app)
     {
         // Define the endpoints
-        app.MapGet("/GetHouseThingsRoomList", async (IHouseThingsService service) =>
+        app.MapGet("/GetHouseThingsRoomsList", async (IHouseThingsService service) =>
         {
             var result = await service.GetActiveHouseThingsRoomsList();
             return result != null ? Results.Ok(result) : Results.NotFound();
